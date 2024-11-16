@@ -14,12 +14,12 @@ def fetch_data(endpoint, params=None):
     # print("Response content:", response.json())
     
     if response.status_code == 200:
-        return response.json()  # Safely return 'data' if it exists
+        return response.json() 
     else:
         raise Exception(f"Failed to fetch data: {response.status_code}, Response: {response.text}")
 
 
-# Fetch specific data
+
 def get_viewed_posts():
     return fetch_data("posts/view", {"page": 1, "page_size": 1000})
 
