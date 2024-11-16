@@ -5,15 +5,15 @@ import numpy as np
 
 def content_based_recommendation(user_interactions, video_metadata, user_id, top_n=10):
     # Extract user history
-    print("user_interactions", user_interactions)
+    # print("user_interactions", user_interactions)
     user_history = user_interactions[user_interactions["id"] == user_id]
-    print("user_history", user_history)
-    print("video_metadata", video_metadata["posts"])
+    # print("user_history", user_history)
+    # print("video_metadata", video_metadata["posts"])
     
     # Extract post_id from 'posts' (assuming it's a dictionary or list of dictionaries)
     video_metadata['post_id'] = video_metadata['posts'].apply(lambda x: x['id'] if isinstance(x, dict) else None)
     user_viewed = video_metadata[video_metadata["post_id"].isin(user_history["id"])]
-    print("user_viewed", user_viewed)
+    # print("user_viewed", user_viewed)
     
     # Ensure tags are in the correct format (strings instead of lists)
     video_metadata['tags'] = video_metadata['tags'].apply(lambda x: ' '.join(x) if isinstance(x, list) else '')

@@ -10,8 +10,8 @@ def fetch_data(endpoint, params=None):
     response = requests.get(url, headers=HEADERS, params=params)
     
     # Log the response for debugging
-    print(f"Response status code: {response.status_code}")
-    print("Response content:", response.json())
+    # print(f"Response status code: {response.status_code}")
+    # print("Response content:", response.json())
     
     if response.status_code == 200:
         return response.json()  # Safely return 'data' if it exists
@@ -30,7 +30,6 @@ def get_ratings():
     return fetch_data("posts/rating", {"page": 1, "page_size": 5})
 
 def get_all_posts():
-    print(fetch_data("posts/summary/get", {"page": 1, "page_size": 1000}))
     return fetch_data("posts/summary/get", {"page": 1, "page_size": 1000})
 
 def get_all_users():

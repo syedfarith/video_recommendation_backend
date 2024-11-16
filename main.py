@@ -15,11 +15,11 @@ video_metadata = preprocess_video_metadata(posts_data)
 # Example User for recommendations
 user_id = get_all_users()["users"][10]["id"]  # Example user ID
 # user_id = 29
-print("User ID:", user_id)
+# print("User ID:", user_id)
 # Content-based recommendations
 content_recommendations = content_based_recommendation(interaction_data, video_metadata, user_id)
-print("Content-Based Recommendations:", content_recommendations)
+# print("Content-Based Recommendations:", content_recommendations)
 
 # Collaborative Filtering recommendations
 collab_recommendations = collaborative_filtering_recommendation(interaction_data, user_id)
-print("Collaborative Recommendations:", collab_recommendations[0])
+# print("Collaborative Recommendations:", collab_recommendations[0])
