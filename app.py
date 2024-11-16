@@ -1,10 +1,19 @@
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from api_handler import get_viewed_posts, get_liked_posts, get_ratings, get_all_posts, get_all_users
 from preprocessing import preprocess_interaction_data, preprocess_video_metadata
 from recommendation_model import content_based_recommendation, collaborative_filtering_recommendation
+from fastapi.middleware.cors import CORSMiddleware
 
-app = Flask(__name__)
-
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    #allow_origins=["http://127.0.0.1:5000", "http://localhost:5000","http://localhost:3000","https://lyrics-react-flax.vercel.app/"], # Allow your frontend origin
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers (Authorization, Content-Type, etc.)
+)
 # Pre-fetch and preprocess data on server start
 viewed_data = get_viewed_posts()
 liked_data = get_liked_posts()
@@ -15,22 +24,23 @@ posts_data = get_all_posts()
 interaction_data = preprocess_interaction_data(viewed_data, liked_data, ratings_data)
 video_metadata = preprocess_video_metadata(posts_data)
 
-# Flask routes
-@app.route('/recommendations/<user_id>', methods=['GET'])
-def get_recommendations(user_id):
+# Pydantic models for response data
+class RecommendationResponse(BaseModel):
+    user_id: int
+    content_based_recommendations: list
+    collaborative_recommendations: list
+
+@app.get("/recommendations", response_model=RecommendationResponse)
+async def get_recommendations(user_index: int = 0):
     """
     Endpoint to fetch recommendations for a specific user.
     Example: /recommendations?user_index=10
     """
     try:
-        # Get the user index from query params (default is 0)
-        user_index = int(user_id)
-
-        
         # Fetch user_id based on the index
         users = get_all_users()["users"]
         if user_index < 0 or user_index >= len(users):
-            return jsonify({"error": "Invalid user index"}), 400
+            raise HTTPException(status_code=400, detail="Invalid user index")
         
         user_id = users[user_index]["id"]
 
@@ -41,18 +51,14 @@ def get_recommendations(user_id):
         collab_recommendations = collaborative_filtering_recommendation(interaction_data, user_id)
         
         # Construct the response
-        response = {
-            "user_id": user_id,
-            "content_based_recommendations": content_recommendations,
-            "collaborative_recommendations": collab_recommendations[:10]  # Limit to top 10 recommendations
-        }
-
-        return jsonify(response), 200
+        return RecommendationResponse(
+            user_id=user_id,
+            content_based_recommendations=content_recommendations,
+            collaborative_recommendations=collab_recommendations[:10]  # Limit to top 10 recommendations
+        )
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        raise HTTPException(status_code=500, detail=str(e))
 
-# Run the Flask app
-if __name__ == '__main__':
-    import os
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=5000)
