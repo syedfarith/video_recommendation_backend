@@ -16,15 +16,16 @@ interaction_data = preprocess_interaction_data(viewed_data, liked_data, ratings_
 video_metadata = preprocess_video_metadata(posts_data)
 
 # Flask routes
-@app.route('/recommendations', methods=['GET'])
-def get_recommendations():
+@app.route('/recommendations/<user_id>  ', methods=['GET'])
+def get_recommendations(user_id):
     """
     Endpoint to fetch recommendations for a specific user.
     Example: /recommendations?user_index=10
     """
     try:
         # Get the user index from query params (default is 0)
-        user_index = int(request.args.get('user_index', 0))
+        user_index = int(user_id)
+
         
         # Fetch user_id based on the index
         users = get_all_users()["users"]
