@@ -16,7 +16,7 @@ interaction_data = preprocess_interaction_data(viewed_data, liked_data, ratings_
 video_metadata = preprocess_video_metadata(posts_data)
 
 # Flask routes
-@app.route('/recommendations/<user_id>  ', methods=['GET'])
+@app.route('/recommendations/<user_id>', methods=['GET'])
 def get_recommendations(user_id):
     """
     Endpoint to fetch recommendations for a specific user.
